@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plaid Generator</title>
+<!-- Wygenerowano: 2026-08-18 18:21:01 | Wersja: 2.0 -->
+<style>
+/* ═══════════════════════════════════════════════════════════
+   PLAID GENERATOR v2 — 2026-08-18 18:21:01
+   ═══════════════════════════════════════════════════════════ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── TOKENS ── */
+:root {
+  /* Dark theme (default) */
+  --bg:       #16161b;
+  --surface:  #1f1f26;
+  --surface2: #28282f;
+  --surface3: #32323b;
+  --border:   #3c3c48;
+  --accent:   #c8a96e;
+  --accent-h: #d4ba80;
+  --text:     #e8e4dc;
+  --text2:    #b0aaA0;
+  --muted:    #777;
+  --danger:   #cc4444;
+  --green:    #4caf82;
+  --radius:   7px;
+  --font:     Georgia, 'Times New Roman', serif;
+  --mono:     'Courier New', Courier, monospace;
+  --shadow:   0 8px 40px rgba(0,0,0,0.55);
+  --panel-w:  380px;
+}
+
+body.light {
+  --bg:       #f0ede8;
+  --surface:  #faf8f5;
+  --surface2: #eeebe5;
+  --surface3: #e4e0d8;
+  --border:   #d0c9be;
+  --accent:   #8b6030;
+  --accent-h: #a47040;
+  --text:     #2a2520;
+  --text2:    #5a5048;
+  --muted:    #8a8078;
+  --danger:   #b83030;
+  --green:    #2e7d52;
+  --shadow:   0 8px 40px rgba(0,0,0,0.18);
+}
+
+/* ── LAYOUT ── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--panel-w) 1fr;
+  grid-template-rows: auto 1fr;
+  transition: background 0.25s, color 0.25s;
+}
+
+/* ── HEADER ── */
+header {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-left h1 {
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.header-left .sub {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+.header-right { display: flex; align-items: center; gap: 8px; }
+
+/* ── THEME SWITCH ── */
+.theme-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── PANEL ── */
+.panel {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 54px);
+}
+
+.section-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+}
+
+/* ── PRESETS ── */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.preset-btn {
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.1s;
+  padding: 0;
+  background: none;
+  position: relative;
+}
+.preset-btn canvas { display: block; width: 100%; height: 100%; }
+.preset-btn:hover { border-color: var(--accent); transform: scale(1.05); }
+.preset-btn.active { border-color: #fff; box-shadow: 0 0 0 1px var(--accent); }
+.preset-btn .preset-name {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-size: 0.5rem;
+  font-family: var(--mono);
+  text-align: center;
+  padding: 1px 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.preset-btn:hover .preset-name { opacity: 1; }
+
+/* ── STRIPE LIST ── */
+.stripe-list { display: flex; flex-direction: column; gap: 6px; }
+
+.stripe-row {
+  display: grid;
+  grid-template-columns: 32px 1fr 64px 32px 32px 32px 32px;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface2);
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  transition: opacity 0.2s, border-color 0.15s;
+  cursor: grab;
+}
+.stripe-row:active { cursor: grabbing; }
+.stripe-row.hidden-stripe { opacity: 0.38; }
+.stripe-row.drag-over { border-color: var(--accent); background: var(--surface3); }
+
+/* COLOR PICKER POPUP */
+.color-cell { position: relative; }
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  border: 2px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s;
+}
+.swatch:hover { transform: scale(1.12); border-color: var(--accent); }
+
+.color-popup {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  min-width: 230px;
+  flex-direction: column;
+  gap: 10px;
+}
+.color-popup.open { display: flex; }
+.color-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.color-popup-close {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.color-popup-close:hover { border-color: var(--danger); color: var(--danger); }
+
+.color-popup input[type="color"] {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 2px;
+  background: var(--surface2);
+}
+.color-popup input[type="text"] {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+}
+
+/* Quick palette */
+.quick-palette {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 3px;
+}
+.qp-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.1s, border-color 0.1s;
+}
+.qp-swatch:hover { transform: scale(1.2); border-color: #fff; }
+
+/* stripe inputs */
+.stripe-label-hex {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stripe-count {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 4px 6px;
+  width: 64px;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+.stripe-count:focus { border-color: var(--accent); outline: none; }
+
+/* Icon buttons */
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+.icon-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+.icon-btn.active-eye { color: var(--accent); border-color: var(--accent); }
+
+.btn-add {
+  background: none;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  padding: 7px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--mono);
+  transition: all 0.15s;
+  width: 100%;
+}
+.btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── CONTROLS ── */
+.controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+label.ctrl-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.val-display { float: right; color: var(--accent); }
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  height: 4px;
+}
+
+select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 5px;
+  padding: 5px 8px;
+  font-size: 0.8rem;
+  font-family: var(--mono);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.toggle-lbl {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0;
+  background: var(--border);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.slider::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.toggle input:checked + .slider { background: var(--accent); }
+.toggle input:checked + .slider::before { transform: translateX(18px); }
+
+/* ── IO BUTTONS ── */
+.io-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: bold; }
+.btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); }
+.btn-secondary { background: var(--surface2); color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm { padding: 5px 10px; font-size: 0.7rem; }
+
+/* ── PREVIEW ── */
+.preview-area {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  overflow: auto;
+}
+
+#tartanCanvas {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  image-rendering: pixelated;
+  max-width: 100%;
+  max-height: calc(100vh - 200px);
+}
+
+.info-badge {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  background: var(--surface);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.dl-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gen-stamp {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 720px) {
+  body { grid-template-columns: 1fr; }
+  .panel { max-height: 55vh; }
+  .preview-area { min-height: 45vw; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div>
+      <h1>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Plaid Generator</h1>
+      <div class="sub">v2.0 · 2026-08-18 18:21:01</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☀ Jasny motyw</button>
+  </div>
+</header>
+
+<!-- LEFT PANEL -->
+<div class="panel" id="mainPanel">
+
+  <!-- PRESETS -->
+  <div>
+    <div class="section-title">Wzory predefiniowane</div>
+    <div class="preset-grid" id="presetGrid"></div>
+  </div>
+
+  <!-- STRIPE EDITOR -->
+  <div>
+    <div class="section-title">Pasy kolorów (przeciągnij aby zmienić kolejność)</div>
+    <div class="stripe-list" id="stripeList"></div>
+    <button class="btn-add" onclick="addStripe()">+ Dodaj pas koloru</button>
+  </div>
+
+  <!-- SETTINGS -->
+  <div>
+    <div class="section-title">Ustawienia wzoru</div>
+    <div class="controls-grid">
+      <div>
+        <label class="ctrl-label">Skala pixeli <span class="val-display" id="scaleVal">4</span></label>
+        <input type="range" id="scaleRange" min="1" max="16" value="4"
+          oninput="updateVal('scaleVal',this.value);drawTartan();saveSettings()">
+      </div>
+      <div>
+        <label class="ctrl-label">Rozmiar PNG</label>
+        <select id="canvasSize" onchange="drawTartan();saveSettings()">
+          <option value="512">512 × 512</option>
+          <option value="768">768 × 768</option>
+          <option value="1024" selected>1024 × 1024</option>
+          <option value="2048">2048 × 2048</option>
+          <option value="4096">4096 × 4096</option>
+        </select>
+      </div>
+    </div>
+    <br>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="toggle-row">
+        <span class="toggle-lbl">Splot tkacki (2/2 twill)</span>
+        <label class="toggle">
+          <input type="checkbox" id="weavingToggle" checked onchange="drawTartan();saveSettings()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <span class="toggle-lbl">Symetria osi (pivot)</span>
+        <label class="toggle">
+          <input type="checkbox" id="symmetryToggle" checked onchange="drawTartan();saveSettings()">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT / IMPORT JSON -->
+  <div>
+    <div class="section-title">Zapisz / Wczytaj ustawienia</div>
+    <div class="io-row">
+      <button class="btn btn-secondary btn-sm" onclick="exportJSON()">⬇ Eksport JSON</button>
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">⬆ Import JSON</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+    </div>
+  </div>
+
+</div>
+
+<!-- RIGHT: PREVIEW -->
+<div class="preview-area">
+  <canvas id="tartanCanvas" width="512" height="512"></canvas>
+  <div class="info-badge" id="infoBadge">Inicjalizacja…</div>
+  <div class="dl-row">
+    <button class="btn btn-primary" onclick="downloadPNG()">⬇ PNG</button>
+    <button class="btn btn-secondary" onclick="downloadSVG()">⬇ SVG</button>
+    <button class="btn btn-secondary" onclick="downloadCSS()">⬇ CSS</button>
+  </div>
+  <div class="gen-stamp" id="genStamp"></div>
+</div>
+
+<!-- COLOR POPUP (singleton) -->
+<div class="color-popup" id="colorPopup">
+  <div class="color-popup-header">
+    <span>Wybierz kolor</span>
+    <button class="color-popup-close" onclick="closeColorPopup()">✕</button>
+  </div>
+  <input type="color" id="popupColorNative" oninput="onPopupColorChange(this.value)">
+  <input type="text" id="popupColorHex" placeholder="#000000" maxlength="7"
+    oninput="onPopupHexInput(this.value)">
+  <div class="quick-palette" id="quickPalette"></div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   PLAID GENERATOR v2 — 2026-08-18 18:21:01
+   ════════════════════════════════════════════════════════════ */
+
+const GEN_TS = '2026-08-18 18:21:01';
+document.getElementById('genStamp').textContent = 'Wygenerowano: ' + GEN_TS;
+
+// ─── QUICK PALETTE ────────────────────────────────────────
+const QUICK_COLORS = [
+  '#000000','#101010','#2C2C2C','#555555','#888888','#AAAAAA','#CCCCCC','#E0E0E0','#F5F5F5','#FFFFFF',
+  '#DC0000','#C00020','#8B0000','#FF4444','#FF8888','#003C14','#006400','#228B22','#4CAF50','#A8D5A2',
+  '#2C4084','#003080','#00205B','#4169E1','#87CEEB','#8B4513','#D4A017','#FFD700','#C8A84B','#F5D98B',
+  '#4B0082','#800080','#DA70D6','#FF69B4','#FFB6C1','#FF6600','#FF8C00','#FFA500','#FFD700','#FFFACD',
+];
+
+function buildQuickPalette() {
+  const el = document.getElementById('quickPalette');
+  QUICK_COLORS.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'qp-swatch';
+    d.style.background = c;
+    d.title = c;
+    d.onclick = () => onPopupColorChange(c, true);
+    el.appendChild(d);
+  });
+}
+
+// ─── COLOR POPUP ──────────────────────────────────────────
+let activeStripeIdx = null;
+let popupOpen = false;
+
+function openColorPopup(idx, swatchEl) {
+  activeStripeIdx = idx;
+  const popup = document.getElementById('colorPopup');
+  const color = stripes[idx].color;
+  document.getElementById('popupColorNative').value = color;
+  document.getElementById('popupColorHex').value = color.toUpperCase();
+
+  // Position near swatch
+  const rect = swatchEl.getBoundingClientRect();
+  const pw = 230, ph = 240;
+  let left = rect.right + 8;
+  let top = rect.top;
+  if (left + pw > window.innerWidth) left = rect.left - pw - 8;
+  if (top + ph > window.innerHeight) top = window.innerHeight - ph - 8;
+  popup.style.left = Math.max(4, left) + 'px';
+  popup.style.top = Math.max(4, top) + 'px';
+  popup.classList.add('open');
+  popupOpen = true;
+}
+
+function closeColorPopup() {
+  document.getElementById('colorPopup').classList.remove('open');
+  popupOpen = false;
+  activeStripeIdx = null;
+}
+
+function onPopupColorChange(val, fromPalette) {
+  if (activeStripeIdx === null) return;
+  // Validate hex
+  if (!/^#[0-9A-Fa-f]{6}$/.test(val)) return;
+  stripes[activeStripeIdx].color = val;
+  document.getElementById('popupColorNative').value = val;
+  document.getElementById('popupColorHex').value = val.toUpperCase();
+  renderStripeList();
+  drawTartan();
+  saveSettings();
+  if (fromPalette) closeColorPopup();
+}
+
+function onPopupHexInput(val) {
+  if (/^#?[0-9A-Fa-f]{6}$/.test(val)) {
+    const c = val.startsWith('#') ? val : '#' + val;
+    onPopupColorChange(c.toUpperCase());
+  }
+}
+
+// Close popup when clicking outside
+document.addEventListener('mousedown', e => {
+  if (!popupOpen) return;
+  const popup = document.getElementById('colorPopup');
+  if (!popup.contains(e.target) && !e.target.closest('.swatch')) {
+    closeColorPopup();
+  }
+});
+
+// ─── PRESETS ──────────────────────────────────────────────
+const PRESETS = [
+  { name: 'Al-Fadhli', stripes: [
+    {c:'#2C4084',n:6},{c:'#003C14',n:6},{c:'#2C4084',n:48},{c:'#101010',n:68},
+    {c:'#E0E0E0',n:2},{c:'#101010',n:68},{c:'#2C4084',n:48},{c:'#DC0000',n:6},
+    {c:'#2C4084',n:6},{c:'#E0E0E0',n:6}]},
+  { name: 'Royal Stewart', stripes: [
+    {c:'#D00000',n:32},{c:'#FFFFFF',n:4},{c:'#000080',n:8},{c:'#FFFFFF',n:4},
+    {c:'#D00000',n:8},{c:'#FFFFFF',n:4},{c:'#008000',n:20},{c:'#FFFFFF',n:4},
+    {c:'#000080',n:8},{c:'#FFFFFF',n:4}]},
+  { name: 'Black Watch', stripes: [
+    {c:'#00381F',n:48},{c:'#00205B',n:16},{c:'#00381F',n:16},{c:'#000000',n:16},
+    {c:'#00381F',n:16},{c:'#00205B',n:16},{c:'#00381F',n:48}]},
+  { name: 'Hunting Stewart', stripes: [
+    {c:'#00381F',n:32},{c:'#C8102E',n:8},{c:'#00381F',n:8},{c:'#FFFFFF',n:4},
+    {c:'#000080',n:16},{c:'#FFFFFF',n:4},{c:'#00381F',n:8},{c:'#C8102E',n:8},{c:'#00381F',n:32}]},
+  { name: 'Dress Gordon', stripes: [
+    {c:'#FFFF00',n:4},{c:'#00381F',n:32},{c:'#000000',n:8},{c:'#00381F',n:8},
+    {c:'#FFFFFF',n:8},{c:'#00381F',n:8},{c:'#000000',n:8},{c:'#00381F',n:32},{c:'#FFFF00',n:4}]},
+  { name: 'Burberry', stripes: [
+    {c:'#C8A96E',n:40},{c:'#FFFFFF',n:8},{c:'#C00020',n:12},{c:'#000000',n:6},
+    {c:'#C00020',n:12},{c:'#FFFFFF',n:8},{c:'#C8A96E',n:40}]},
+  { name: 'Pastelowy', stripes: [
+    {c:'#FFB3C6',n:20},{c:'#FFFFFF',n:6},{c:'#B3D9FF',n:30},{c:'#FFFACD',n:6},
+    {c:'#C8FFB3',n:20},{c:'#FFFFFF',n:6},{c:'#FFB3C6',n:20}]},
+  { name: 'Cyber', stripes: [
+    {c:'#0D0D0D',n:40},{c:'#00FF88',n:4},{c:'#0D0D0D',n:16},{c:'#FF0066',n:8},
+    {c:'#0D0D0D',n:16},{c:'#00FF88',n:4},{c:'#0D0D0D',n:40}]},
+  { name: 'Złoty', stripes: [
+    {c:'#8B6914',n:30},{c:'#C8A84B',n:8},{c:'#F5D98B',n:4},{c:'#C8A84B',n:8},
+    {c:'#2C1A00',n:24},{c:'#C8A84B',n:8},{c:'#F5D98B',n:4},{c:'#C8A84B',n:8},{c:'#8B6914',n:30}]},
+  { name: 'Retro', stripes: [
+    {c:'#8B3A3A',n:24},{c:'#D4A017',n:6},{c:'#F5E6C8',n:12},{c:'#4A7C59',n:24},
+    {c:'#F5E6C8',n:12},{c:'#D4A017',n:6},{c:'#8B3A3A',n:24}]},
+  { name: 'Morski', stripes: [
+    {c:'#002B5C',n:36},{c:'#FFFFFF',n:6},{c:'#C8102E',n:12},{c:'#FFFFFF',n:6},
+    {c:'#002B5C',n:12},{c:'#FFFFFF',n:6},{c:'#C8102E',n:12},{c:'#FFFFFF',n:6},{c:'#002B5C',n:36}]},
+  { name: 'Śląski', stripes: [
+    {c:'#1a1a1a',n:40},{c:'#FFFFFF',n:8},{c:'#FFD700',n:12},{c:'#FFFFFF',n:4},
+    {c:'#FFD700',n:12},{c:'#FFFFFF',n:8},{c:'#1a1a1a',n:40}]},
+  { name: 'Leśny', stripes: [
+    {c:'#2D4A1E',n:30},{c:'#5C3A1E',n:6},{c:'#8B7355',n:12},{c:'#2D4A1E',n:12},
+    {c:'#A0522D',n:4},{c:'#2D4A1E',n:12},{c:'#8B7355',n:12},{c:'#5C3A1E',n:6},{c:'#2D4A1E',n:30}]},
+  { name: 'Neonowy', stripes: [
+    {c:'#0D0D0D',n:30},{c:'#FF00FF',n:6},{c:'#00FFFF',n:12},{c:'#0D0D0D',n:8},
+    {c:'#FFFF00',n:4},{c:'#0D0D0D',n:8},{c:'#00FFFF',n:12},{c:'#FF00FF',n:6},{c:'#0D0D0D',n:30}]},
+  { name: 'Szary Mglisty', stripes: [
+    {c:'#8A9BA8',n:32},{c:'#C0CDD6',n:8},{c:'#5A6A74',n:16},{c:'#DDEAF0',n:4},
+    {c:'#5A6A74',n:16},{c:'#C0CDD6',n:8},{c:'#8A9BA8',n:32}]},
+  { name: 'Rybnik', stripes: [
+    {c:'#003087',n:32},{c:'#FFFFFF',n:6},{c:'#C8102E',n:16},{c:'#FFD700',n:4},
+    {c:'#C8102E',n:16},{c:'#FFFFFF',n:6},{c:'#003087',n:32}]},
+];
+
+function presetToStripes(p) {
+  return p.stripes.map(s => ({ color: s.c || s.color, count: s.n || s.count, visible: true }));
+}
+
+// ─── STATE ────────────────────────────────────────────────
+let stripes = presetToStripes(PRESETS[0]);
+let dragSrcIdx = null;
+
+// ─── THEME ────────────────────────────────────────────────
+let isDark = true;
+
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('light', !isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '☀ Jasny motyw' : '🌙 Ciemny motyw';
+  localStorage.setItem('pg_theme', isDark ? 'dark' : 'light');
+}
+
+// ─── BUILD PRESETS ────────────────────────────────────────
+function buildPresets() {
+  const grid = document.getElementById('presetGrid');
+  grid.innerHTML = '';
+  PRESETS.forEach((p, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn' + (i === 0 ? ' active' : '');
+    btn.title = p.name;
+    const c = document.createElement('canvas');
+    c.width = 80; c.height = 50;
+    renderMiniPreset(c, presetToStripes(p));
+    const nm = document.createElement('div');
+    nm.className = 'preset-name';
+    nm.textContent = p.name;
+    btn.appendChild(c);
+    btn.appendChild(nm);
+    btn.onclick = () => {
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      stripes = presetToStripes(p);
+      renderStripeList();
+      drawTartan();
+      saveSettings();
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function renderMiniPreset(canvas, strps) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const seq = expandStripes(strps, false);
+  const total = Math.max(seq.length, 1);
+  seq.forEach((col, x) => {
+    ctx.fillStyle = col;
+    ctx.fillRect(Math.floor(x * W / total), 0, Math.ceil(W / total) + 1, H / 2);
+  });
+  // Show weave hint (crosshatch bottom half)
+  seq.forEach((col, x) => {
+    ctx.fillStyle = col;
+    const px = Math.floor(x * W / total);
+    const pw = Math.ceil(W / total) + 1;
+    for (let y = H / 2; y < H; y++) {
+      if (Math.floor((x + y) / 2) % 2 === 0) ctx.fillRect(px, y, pw, 1);
+    }
+  });
+}
+
+// ─── STRIPE EDITOR ────────────────────────────────────────
+function renderStripeList() {
+  const list = document.getElementById('stripeList');
+  list.innerHTML = '';
+  stripes.forEach((s, i) => {
+    if (s.visible === undefined) s.visible = true;
+    const row = document.createElement('div');
+    row.className = 'stripe-row' + (!s.visible ? ' hidden-stripe' : '');
+    row.draggable = true;
+    row.dataset.idx = i;
+
+    // Drag events
+    row.addEventListener('dragstart', e => { dragSrcIdx = i; row.style.opacity = '0.4'; });
+    row.addEventListener('dragend', e => { row.style.opacity = ''; document.querySelectorAll('.stripe-row').forEach(r => r.classList.remove('drag-over')); });
+    row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('drag-over'); });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragSrcIdx === null || dragSrcIdx === i) return;
+      const moved = stripes.splice(dragSrcIdx, 1)[0];
+      stripes.splice(i, 0, moved);
+      dragSrcIdx = null;
+      renderStripeList();
+      drawTartan();
+      saveSettings();
+    });
+
+    row.innerHTML = `
+      <div class="color-cell">
+        <div class="swatch" style="background:${s.color}" title="Kliknij aby zmienić kolor"
+          onclick="openColorPopup(${i}, this)"></div>
+      </div>
+      <span class="stripe-label-hex" style="color:${s.color};text-shadow:0 0 8px ${s.color}66">${s.color.toUpperCase()}</span>
+      <input type="number" class="stripe-count" value="${s.count}" min="1" max="512" title="Szerokość pasa (piksele × skala)"
+        oninput="updateCount(${i}, this.value)">
+      <button class="icon-btn ${s.visible ? 'active-eye' : ''}" title="${s.visible ? 'Ukryj pas' : 'Pokaż pas'}"
+        onclick="toggleVisible(${i})">👁</button>
+      <button class="icon-btn" title="Przesuń w górę" onclick="moveStripe(${i},-1)">▲</button>
+      <button class="icon-btn" title="Przesuń w dół" onclick="moveStripe(${i},1)">▼</button>
+      <button class="icon-btn danger" title="Usuń pas" onclick="removeStripe(${i})">✕</button>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function updateCount(i, val) {
+  stripes[i].count = Math.max(1, parseInt(val) || 1);
+  drawTartan();
+  saveSettings();
+}
+
+function toggleVisible(i) {
+  stripes[i].visible = !stripes[i].visible;
+  renderStripeList();
+  drawTartan();
+  saveSettings();
+}
+
+function moveStripe(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= stripes.length) return;
+  [stripes[i], stripes[j]] = [stripes[j], stripes[i]];
+  renderStripeList();
+  drawTartan();
+  saveSettings();
+}
+
+function addStripe() {
+  stripes.push({ color: '#888888', count: 8, visible: true });
+  renderStripeList();
+  drawTartan();
+  saveSettings();
+}
+
+function removeStripe(i) {
+  if (stripes.length <= 1) return;
+  stripes.splice(i, 1);
+  renderStripeList();
+  drawTartan();
+  saveSettings();
+}
+
+function updateVal(id, v) { document.getElementById(id).textContent = v; }
+
+// ─── TARTAN RENDER ────────────────────────────────────────
+function expandStripes(stripeArr, symmetric) {
+  let seq = [];
+  stripeArr.forEach(s => {
+    if (s.visible === false) return;
+    for (let k = 0; k < s.count; k++) seq.push(s.color);
+  });
+  if (symmetric && seq.length > 1) {
+    const rev = seq.slice(0, -1).reverse();
+    seq = [...seq, ...rev];
+  }
+  return seq;
+}
+
+function drawTartan() {
+  const canvas = document.getElementById('tartanCanvas');
+  const size = parseInt(document.getElementById('canvasSize').value);
+  const scale = parseInt(document.getElementById('scaleRange').value);
+  const weaving = document.getElementById('weavingToggle').checked;
+  const symmetric = document.getElementById('symmetryToggle').checked;
+
+  canvas.width = size;
+  canvas.height = size;
+
+  // Responsive display size
+  const panelW = 380;
+  const margin = 100;
+  const avail = Math.min(window.innerWidth - panelW - margin, window.innerHeight - 160);
+  const display = Math.min(size, Math.max(300, avail));
+  canvas.style.width = display + 'px';
+  canvas.style.height = display + 'px';
+
+  const ctx = canvas.getContext('2d');
+  const seq = expandStripes(stripes, symmetric);
+  const period = seq.length * scale;
+
+  if (period === 0) {
+    ctx.clearRect(0, 0, size, size);
+    return;
+  }
+
+  // OffscreenCanvas for speed (if supported)
+  const img = ctx.createImageData(size, size);
+  const data = img.data;
+
+  for (let y = 0; y < size; y++) {
+    const ci = Math.floor((y % period) / scale) % seq.length;
+    const [hr, hg, hb] = hexToRgb(seq[ci]);
+    for (let x = 0; x < size; x++) {
+      const vi = Math.floor((x % period) / scale) % seq.length;
+      const [vr, vg, vb] = hexToRgb(seq[vi]);
+
+      let r, g, b;
+      if (weaving) {
+        const block = Math.floor((x + y) / 2) % 2;
+        if (block === 0) { r = vr; g = vg; b = vb; }
+        else             { r = hr; g = hg; b = hb; }
+      } else {
+        // additive blend (tartan approximation)
+        r = Math.round((hr * vr) / 255);
+        g = Math.round((hg * vg) / 255);
+        b = Math.round((hb * vb) / 255);
+      }
+
+      const idx = (y * size + x) * 4;
+      data[idx]   = r;
+      data[idx+1] = g;
+      data[idx+2] = b;
+      data[idx+3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+
+  document.getElementById('infoBadge').textContent =
+    `splot: ${weaving ? '2/2 twill' : 'wyłączony'} · symetria: ${symmetric ? 'pivot' : 'off'} · ${size}×${size}px · skala: ${scale}px`;
+}
+
+// Color cache
+const _colorCache = {};
+function hexToRgb(hex) {
+  if (_colorCache[hex]) return _colorCache[hex];
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  _colorCache[hex] = [r,g,b];
+  return [r,g,b];
+}
+
+// ─── DOWNLOAD ─────────────────────────────────────────────
+function ts() {
+  const d = new Date();
+  return d.getFullYear()
+    + String(d.getMonth()+1).padStart(2,'0')
+    + String(d.getDate()).padStart(2,'0')
+    + '_'
+    + String(d.getHours()).padStart(2,'0')
+    + String(d.getMinutes()).padStart(2,'0')
+    + String(d.getSeconds()).padStart(2,'0');
+}
+
+function downloadPNG() {
+  const c = document.getElementById('tartanCanvas');
+  const a = document.createElement('a');
+  a.download = `plaid_${ts()}.png`;
+  a.href = c.toDataURL('image/png');
+  a.click();
+}
+
+function buildSVG() {
+  const scale = parseInt(document.getElementById('scaleRange').value);
+  const symmetric = document.getElementById('symmetryToggle').checked;
+  const weaving = document.getElementById('weavingToggle').checked;
+  const seq = expandStripes(stripes, symmetric);
+  const period = seq.length * scale;
+  const S = period;
+  let hy = 0, hx = 0;
+  let horizRects = '', vertRects = '';
+  for (let i = 0; i < seq.length; i++) {
+    horizRects += `<rect fill="${seq[i]}" height="${scale}" width="100%" x="0" y="${hy}"/>`;
+    vertRects  += `<rect fill="${seq[i]}" height="100%" width="${scale}" x="${hx}" y="0"/>`;
+    hy += scale; hx += scale;
+  }
+  const twillMask = weaving ? `
+  <defs>
+    <pattern id="twill" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="2" height="2" fill="white"/>
+      <rect x="2" y="2" width="2" height="2" fill="white"/>
+    </pattern>
+    <mask id="wm"><rect width="100%" height="100%" fill="url(#twill)"/></mask>
+  </defs>` : '<defs/>';
+  const vg = weaving
+    ? `<g id="vertStripes" mask="url(#wm)">${vertRects}</g>`
+    : `<g id="vertStripes" opacity="0.5">${vertRects}</g>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" width="${S}" height="${S}">
+  <!-- Plaid Generator v2 · ${new Date().toISOString()} -->
+  ${twillMask}
+  <g id="horizStripes">${horizRects}</g>
+  ${vg}
+</svg>`;
+}
+
+function downloadSVG() {
+  const blob = new Blob([buildSVG()], { type:'image/svg+xml' });
+  const a = document.createElement('a');
+  a.download = `plaid_${ts()}.svg`;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+}
+
+function downloadCSS() {
+  const scale = parseInt(document.getElementById('scaleRange').value);
+  const symmetric = document.getElementById('symmetryToggle').checked;
+  const seq = expandStripes(stripes, symmetric);
+  const period = seq.length * scale;
+  let hStops = [], vStops = [], pos = 0;
+  for (let i = 0; i < seq.length; i++) {
+    hStops.push(`${seq[i]} ${pos}px`,`${seq[i]} ${pos+scale}px`);
+    vStops.push(`${seq[i]} ${pos}px`,`${seq[i]} ${pos+scale}px`);
+    pos += scale;
+  }
+  const css = `/* Plaid Generator v2 · ${new Date().toISOString()} */\n\n.plaid {\n  background-image:\n    repeating-linear-gradient(\n      to bottom,\n      ${hStops.join(',\n      ')}\n    ),\n    repeating-linear-gradient(\n      to right,\n      ${vStops.join(',\n      ')}\n    );\n  background-blend-mode: multiply;\n  background-size: ${period}px ${period}px;\n}`;
+  const blob = new Blob([css], { type:'text/css' });
+  const a = document.createElement('a');
+  a.download = `plaid_${ts()}.css`;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+}
+
+// ─── JSON EXPORT / IMPORT ─────────────────────────────────
+function exportJSON() {
+  const data = {
+    version: 2,
+    exported: new Date().toISOString(),
+    stripes,
+    settings: {
+      scale: document.getElementById('scaleRange').value,
+      canvasSize: document.getElementById('canvasSize').value,
+      weaving: document.getElementById('weavingToggle').checked,
+      symmetry: document.getElementById('symmetryToggle').checked,
+      theme: isDark ? 'dark' : 'light',
+    }
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.download = `plaid-settings_${ts()}.json`;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+}
+
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.stripes) {
+        stripes = data.stripes.map(s => ({
+          color: s.color || '#888888',
+          count: s.count || 8,
+          visible: s.visible !== false,
+        }));
+        renderStripeList();
+      }
+      if (data.settings) {
+        const s = data.settings;
+        if (s.scale) { document.getElementById('scaleRange').value = s.scale; updateVal('scaleVal', s.scale); }
+        if (s.canvasSize) document.getElementById('canvasSize').value = s.canvasSize;
+        if (s.weaving !== undefined) document.getElementById('weavingToggle').checked = s.weaving;
+        if (s.symmetry !== undefined) document.getElementById('symmetryToggle').checked = s.symmetry;
+        if (s.theme) {
+          isDark = s.theme === 'dark';
+          document.body.classList.toggle('light', !isDark);
+          document.getElementById('themeBtn').textContent = isDark ? '☀ Jasny motyw' : '🌙 Ciemny motyw';
+        }
+      }
+      drawTartan();
+      saveSettings();
+    } catch(err) { alert('Błąd wczytywania JSON: ' + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ─── LOCALSTORAGE ─────────────────────────────────────────
+function saveSettings() {
+  try {
+    localStorage.setItem('pg_stripes', JSON.stringify(stripes));
+    localStorage.setItem('pg_scale', document.getElementById('scaleRange').value);
+    localStorage.setItem('pg_size', document.getElementById('canvasSize').value);
+    localStorage.setItem('pg_weaving', document.getElementById('weavingToggle').checked);
+    localStorage.setItem('pg_symmetry', document.getElementById('symmetryToggle').checked);
+    localStorage.setItem('pg_theme', isDark ? 'dark' : 'light');
+  } catch(e) {}
+}
+
+function loadSettings() {
+  try {
+    const theme = localStorage.getItem('pg_theme') || 'dark';
+    isDark = theme === 'dark';
+    document.body.classList.toggle('light', !isDark);
+    document.getElementById('themeBtn').textContent = isDark ? '☀ Jasny motyw' : '🌙 Ciemny motyw';
+
+    const savedStripes = localStorage.getItem('pg_stripes');
+    if (savedStripes) stripes = JSON.parse(savedStripes);
+
+    const scale = localStorage.getItem('pg_scale');
+    if (scale) { document.getElementById('scaleRange').value = scale; updateVal('scaleVal', scale); }
+
+    const size = localStorage.getItem('pg_size');
+    if (size) document.getElementById('canvasSize').value = size;
+
+    const weaving = localStorage.getItem('pg_weaving');
+    if (weaving !== null) document.getElementById('weavingToggle').checked = weaving === 'true';
+
+    const sym = localStorage.getItem('pg_symmetry');
+    if (sym !== null) document.getElementById('symmetryToggle').checked = sym === 'true';
+  } catch(e) {}
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+buildQuickPalette();
+buildPresets();
+loadSettings();
+renderStripeList();
+drawTartan();
+
+window.addEventListener('resize', () => drawTartan());
+</script>
+</body>
+</html>
